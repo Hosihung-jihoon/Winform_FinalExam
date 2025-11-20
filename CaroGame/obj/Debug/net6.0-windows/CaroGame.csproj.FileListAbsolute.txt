@@ -1,0 +1,16 @@
+D:\Individual\c#_winform\CaroGame\CaroGame\bin\Debug\net6.0-windows\CaroGame.exe
+D:\Individual\c#_winform\CaroGame\CaroGame\bin\Debug\net6.0-windows\CaroGame.deps.json
+D:\Individual\c#_winform\CaroGame\CaroGame\bin\Debug\net6.0-windows\CaroGame.runtimeconfig.json
+D:\Individual\c#_winform\CaroGame\CaroGame\bin\Debug\net6.0-windows\CaroGame.dll
+D:\Individual\c#_winform\CaroGame\CaroGame\bin\Debug\net6.0-windows\CaroGame.pdb
+D:\Individual\c#_winform\CaroGame\CaroGame\obj\Debug\net6.0-windows\CaroGame.Form1.resources
+D:\Individual\c#_winform\CaroGame\CaroGame\obj\Debug\net6.0-windows\CaroGame.csproj.GenerateResource.cache
+D:\Individual\c#_winform\CaroGame\CaroGame\obj\Debug\net6.0-windows\CaroGame.GeneratedMSBuildEditorConfig.editorconfig
+D:\Individual\c#_winform\CaroGame\CaroGame\obj\Debug\net6.0-windows\CaroGame.AssemblyInfoInputs.cache
+D:\Individual\c#_winform\CaroGame\CaroGame\obj\Debug\net6.0-windows\CaroGame.AssemblyInfo.cs
+D:\Individual\c#_winform\CaroGame\CaroGame\obj\Debug\net6.0-windows\CaroGame.csproj.CoreCompileInputs.cache
+D:\Individual\c#_winform\CaroGame\CaroGame\obj\Debug\net6.0-windows\CaroGame.dll
+D:\Individual\c#_winform\CaroGame\CaroGame\obj\Debug\net6.0-windows\refint\CaroGame.dll
+D:\Individual\c#_winform\CaroGame\CaroGame\obj\Debug\net6.0-windows\CaroGame.pdb
+D:\Individual\c#_winform\CaroGame\CaroGame\obj\Debug\net6.0-windows\CaroGame.genruntimeconfig.cache
+D:\Individual\c#_winform\CaroGame\CaroGame\obj\Debug\net6.0-windows\ref\CaroGame.dll
