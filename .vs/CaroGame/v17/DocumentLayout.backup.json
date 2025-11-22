@@ -3,8 +3,12 @@
   "WorkspaceRootPath": "D:\\Individual\\c#_winform\\CaroGame\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{2C27E712-5C00-4636-AC3B-0F21D1C3B0D1}|CaroGame\\CaroGame.Winforms.csproj|d:\\individual\\c#_winform\\carogame\\carogame\\forms\\menuform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{2C27E712-5C00-4636-AC3B-0F21D1C3B0D1}|CaroGame\\CaroGame.Winforms.csproj|solutionrelative:carogame\\forms\\menuform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+      "AbsoluteMoniker": "D:0:0:{BBB1C2F2-8E8F-474E-B7FD-CDFEF657A31F}|CaroGame.Infrastructure\\CaroGame.Infrastructure.csproj|d:\\individual\\c#_winform\\carogame\\carogame.infrastructure\\networking\\signalrclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{BBB1C2F2-8E8F-474E-B7FD-CDFEF657A31F}|CaroGame.Infrastructure\\CaroGame.Infrastructure.csproj|solutionrelative:carogame.infrastructure\\networking\\signalrclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2C27E712-5C00-4636-AC3B-0F21D1C3B0D1}|CaroGame\\CaroGame.Winforms.csproj|d:\\individual\\c#_winform\\carogame\\carogame\\forms\\onlinegameform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2C27E712-5C00-4636-AC3B-0F21D1C3B0D1}|CaroGame\\CaroGame.Winforms.csproj|solutionrelative:carogame\\forms\\onlinegameform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -14,19 +18,41 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "MenuForm.cs [Design]",
-              "DocumentMoniker": "D:\\Individual\\c#_winform\\CaroGame\\CaroGame\\Forms\\MenuForm.cs",
-              "RelativeDocumentMoniker": "CaroGame\\Forms\\MenuForm.cs",
-              "ToolTip": "D:\\Individual\\c#_winform\\CaroGame\\CaroGame\\Forms\\MenuForm.cs [Design]",
-              "RelativeToolTip": "CaroGame\\Forms\\MenuForm.cs [Design]",
+              "DocumentIndex": 1,
+              "Title": "OnlineGameForm.cs",
+              "DocumentMoniker": "D:\\Individual\\c#_winform\\CaroGame\\CaroGame\\Forms\\OnlineGameForm.cs",
+              "RelativeDocumentMoniker": "CaroGame\\Forms\\OnlineGameForm.cs",
+              "ToolTip": "D:\\Individual\\c#_winform\\CaroGame\\CaroGame\\Forms\\OnlineGameForm.cs",
+              "RelativeToolTip": "CaroGame\\Forms\\OnlineGameForm.cs",
+              "ViewState": "AgIAAJ8AAAAAAAAAAAAowEcBAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-20T08:26:24.941Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-11-22T09:43:30.13Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "SignalRClient.cs",
+              "DocumentMoniker": "D:\\Individual\\c#_winform\\CaroGame\\CaroGame.Infrastructure\\Networking\\SignalRClient.cs",
+              "RelativeDocumentMoniker": "CaroGame.Infrastructure\\Networking\\SignalRClient.cs",
+              "ToolTip": "D:\\Individual\\c#_winform\\CaroGame\\CaroGame.Infrastructure\\Networking\\SignalRClient.cs",
+              "RelativeToolTip": "CaroGame.Infrastructure\\Networking\\SignalRClient.cs",
+              "ViewState": "AgIAAOQAAAAAAAAAAAAuwOkAAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-22T09:41:03.138Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
             }
           ]
         }

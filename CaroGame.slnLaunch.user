@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "CaroGame.Server\\CaroGame.Server.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "CaroGame\\CaroGame.Winforms.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

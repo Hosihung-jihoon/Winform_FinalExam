@@ -1,4 +1,4 @@
-using CaroGame.WinForms.Forms;
+using CaroGame.Winforms.Forms;
 
 namespace CaroGame
 {

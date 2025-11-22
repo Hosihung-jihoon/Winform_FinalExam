@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "RVXKBLtMufLeluv0yXWuTipvfRZq1GhEVyZh5Nhuq8Y=",
+  "Source": "CaroGame.Server",
+  "BasePath": "_content/CaroGame.Server",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}

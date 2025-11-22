@@ -1,11 +1,12 @@
-D:\Individual\c#_winform\CaroGame\CaroGame.Core\obj\Debug\net6.0\CaroGame.Core.GeneratedMSBuildEditorConfig.editorconfig
-D:\Individual\c#_winform\CaroGame\CaroGame.Core\obj\Debug\net6.0\CaroGame.Core.AssemblyInfoInputs.cache
-D:\Individual\c#_winform\CaroGame\CaroGame.Core\obj\Debug\net6.0\CaroGame.Core.AssemblyInfo.cs
-D:\Individual\c#_winform\CaroGame\CaroGame.Core\obj\Debug\net6.0\CaroGame.Core.csproj.CoreCompileInputs.cache
 D:\Individual\c#_winform\CaroGame\CaroGame.Core\bin\Debug\net6.0\CaroGame.Core.deps.json
 D:\Individual\c#_winform\CaroGame\CaroGame.Core\bin\Debug\net6.0\CaroGame.Core.dll
 D:\Individual\c#_winform\CaroGame\CaroGame.Core\bin\Debug\net6.0\CaroGame.Core.pdb
 D:\Individual\c#_winform\CaroGame\CaroGame.Core\obj\Debug\net6.0\CaroGame.Core.csproj.AssemblyReference.cache
+D:\Individual\c#_winform\CaroGame\CaroGame.Core\obj\Debug\net6.0\CaroGame.Core.GeneratedMSBuildEditorConfig.editorconfig
+D:\Individual\c#_winform\CaroGame\CaroGame.Core\obj\Debug\net6.0\CaroGame.Core.AssemblyInfoInputs.cache
+D:\Individual\c#_winform\CaroGame\CaroGame.Core\obj\Debug\net6.0\CaroGame.Core.AssemblyInfo.cs
+D:\Individual\c#_winform\CaroGame\CaroGame.Core\obj\Debug\net6.0\CaroGame.Core.csproj.CoreCompileInputs.cache
+D:\Individual\c#_winform\CaroGame\CaroGame.Core\obj\Debug\net6.0\CaroGame.Core.sourcelink.json
 D:\Individual\c#_winform\CaroGame\CaroGame.Core\obj\Debug\net6.0\CaroGame.Core.dll
 D:\Individual\c#_winform\CaroGame\CaroGame.Core\obj\Debug\net6.0\refint\CaroGame.Core.dll
 D:\Individual\c#_winform\CaroGame\CaroGame.Core\obj\Debug\net6.0\CaroGame.Core.pdb

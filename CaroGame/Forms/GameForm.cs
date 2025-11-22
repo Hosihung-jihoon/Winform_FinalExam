@@ -1,4 +1,8 @@
-﻿using System;
+﻿using CaroGame.Core.Enums;
+using CaroGame.Core.Models;
+using CaroGame.Core.Services;
+using CaroGame.Infrastructure.Repositories;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -7,229 +11,107 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using CaroGame.Core.Enums;
-using CaroGame.Core.Services;
-using CaroGame.Core.Models;
-using CaroGame.Infrastructure.Repositories;
 
-namespace CaroGame.WinForms.Forms
+namespace CaroGame.Winforms.Forms
 {
-    /// <summary>
-    /// Form game chính cho PvP và PvC
-    /// </summary>
     public partial class GameForm : Form
     {
+        #region Fields
+
         private readonly int _boardSize;
         private readonly GameMode _gameMode;
         private readonly GameEngine _gameEngine;
         private readonly JsonGameRepository _repository;
 
         private Button[,] _boardButtons;
-        private Panel _boardPanel;
-        private System.Windows.Forms.Timer _gameTimer;
         private System.Windows.Forms.Timer _flashTimer;
-
-        // UI Components
-        private Label _lblPlayer1Name;
-        private Label _lblPlayer2Name;
-        private ProgressBar _pbPlayer1Time;
-        private ProgressBar _pbPlayer2Time;
-        private Label _lblPlayer1Hints;
-        private Label _lblPlayer2Hints;
-        private Panel _pnlPlayer1Info;
-        private Panel _pnlPlayer2Info;
 
         private Move _hintMove;
         private List<(int, int)> _winningCells;
         private int _flashCount;
 
-        public GameForm(int boardSize, GameMode gameMode)
+        #endregion
+
+        #region Contructor
+        public GameForm()
+        {
+            InitializeComponent();
+        }
+
+        public GameForm(int boardSize, GameMode gameMode) : this()
         {
             _boardSize = boardSize;
             _gameMode = gameMode;
             _gameEngine = GameEngine.Instance;
             _repository = new JsonGameRepository();
 
-            InitializeComponent();
+            SetupForm();
+            SetupHoverEffects();
+            CreateBoardButtons();
             InitializeGame();
         }
+        #endregion
 
-        private void InitializeComponent()
+        #region Setup Methods
+
+        private void SetupForm()
         {
-            this.Text = "Caro Game";
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.FormBorderStyle = FormBorderStyle.FixedSingle;
-            this.MaximizeBox = false;
-
-            // Calculate form size based on board
+            // Tính toán kích thước form dựa trên boardSize
             int cellSize = _boardSize == 3 ? 100 : 35;
             int boardPixelSize = _boardSize * cellSize + (_boardSize - 1) * 2;
-            int formWidth = boardPixelSize + 40;
-            int formHeight = boardPixelSize + 200;
-            this.ClientSize = new Size(formWidth, formHeight);
-            this.BackColor = Color.White;
 
-            CreateToolbar();
-            CreatePlayerInfoPanels(boardPixelSize);
-            CreateBoard(cellSize, boardPixelSize);
+            // Cập nhật kích thước form
+            this.ClientSize = new Size(boardPixelSize + 60, boardPixelSize + 200);
+
+            // Cập nhật kích thước và vị trí các panels
+            int panelWidth = (boardPixelSize - 20) / 2;
+
+            pnlPlayer1Info.Size = new Size(panelWidth, 80);
+            pnlPlayer1Info.Location = new Point(20, 60);
+
+            pnlPlayer2Info.Size = new Size(panelWidth, 80);
+            pnlPlayer2Info.Location = new Point(panelWidth + 40, 60);
+
+            // Cập nhật progressbar width
+            pbPlayer1Time.Size = new Size(panelWidth - 20, 20);
+            pbPlayer2Time.Size = new Size(panelWidth - 20, 20);
+
+            // Cập nhật board panel
+            pnlBoard.Size = new Size(boardPixelSize, boardPixelSize);
+            pnlBoard.Location = new Point(20, 150);
+
+            // Cập nhật vị trí button Menu
+            btnMenu.Location = new Point(this.ClientSize.Width - 90, 7);
+
+            // Ẩn Save/Load nếu không phải PvC
+            if (_gameMode != GameMode.PlayerVsComputer)
+            {
+                btnSave.Visible = false;
+                btnLoad.Visible = false;
+            }
         }
 
-        private void CreateToolbar()
+        private void SetupHoverEffects()
         {
-            var toolbar = new Panel
+            // Toolbar buttons hover
+            var toolbarButtons = new[] { btnUndo, btnRedo, btnNewGame, btnHint, btnSave, btnLoad };
+            foreach (var btn in toolbarButtons)
             {
-                Dock = DockStyle.Top,
-                Height = 50,
-                BackColor = Color.FromArgb(52, 73, 94)
-            };
-
-            var btnStyle = new Action<Button>((btn) =>
-            {
-                btn.Size = new Size(80, 35);
-                btn.FlatStyle = FlatStyle.Flat;
-                btn.FlatAppearance.BorderSize = 0;
-                btn.BackColor = Color.FromArgb(41, 128, 185);
-                btn.ForeColor = Color.White;
-                btn.Font = new Font("Arial", 9, FontStyle.Regular);
-                btn.Cursor = Cursors.Hand;
                 btn.MouseEnter += (s, e) => btn.BackColor = Color.FromArgb(52, 152, 219);
                 btn.MouseLeave += (s, e) => btn.BackColor = Color.FromArgb(41, 128, 185);
-            });
-
-            int btnX = 10;
-            int btnY = 7;
-            int spacing = 90;
-
-            var btnUndo = new Button { Text = "Undo", Location = new Point(btnX, btnY) };
-            btnStyle(btnUndo);
-            btnUndo.Click += BtnUndo_Click;
-            toolbar.Controls.Add(btnUndo);
-
-            var btnRedo = new Button { Text = "Redo", Location = new Point(btnX + spacing, btnY) };
-            btnStyle(btnRedo);
-            btnRedo.Click += BtnRedo_Click;
-            toolbar.Controls.Add(btnRedo);
-
-            var btnNewGame = new Button { Text = "New Game", Location = new Point(btnX + spacing * 2, btnY) };
-            btnStyle(btnNewGame);
-            btnNewGame.Click += BtnNewGame_Click;
-            toolbar.Controls.Add(btnNewGame);
-
-            var btnHint = new Button { Text = "Hint", Location = new Point(btnX + spacing * 3, btnY) };
-            btnStyle(btnHint);
-            btnHint.Click += BtnHint_Click;
-            toolbar.Controls.Add(btnHint);
-
-            // Save/Load chỉ hiện trong PvC
-            if (_gameMode == GameMode.PlayerVsComputer)
-            {
-                var btnSave = new Button { Text = "Save", Location = new Point(btnX + spacing * 4, btnY) };
-                btnStyle(btnSave);
-                btnSave.Click += BtnSave_Click;
-                toolbar.Controls.Add(btnSave);
-
-                var btnLoad = new Button { Text = "Load", Location = new Point(btnX + spacing * 5, btnY) };
-                btnStyle(btnLoad);
-                btnLoad.Click += BtnLoad_Click;
-                toolbar.Controls.Add(btnLoad);
             }
 
-            var btnMenu = new Button
-            {
-                Text = "Menu",
-                Location = new Point(this.ClientSize.Width - 90, btnY),
-                BackColor = Color.FromArgb(192, 57, 43)
-            };
-            btnStyle(btnMenu);
+            // Menu button hover
             btnMenu.MouseEnter += (s, e) => btnMenu.BackColor = Color.FromArgb(231, 76, 60);
             btnMenu.MouseLeave += (s, e) => btnMenu.BackColor = Color.FromArgb(192, 57, 43);
-            btnMenu.Click += BtnMenu_Click;
-            toolbar.Controls.Add(btnMenu);
-
-            this.Controls.Add(toolbar);
         }
 
-        private void CreatePlayerInfoPanels(int boardPixelSize)
+        private void CreateBoardButtons()
         {
-            int panelWidth = boardPixelSize / 2 - 10;
-            int panelHeight = 80;
-            int panelY = 60;
-
-            // Player 1 Info
-            _pnlPlayer1Info = CreatePlayerPanel(10, panelY, panelWidth, panelHeight, true);
-            this.Controls.Add(_pnlPlayer1Info);
-
-            // Player 2 Info
-            _pnlPlayer2Info = CreatePlayerPanel(panelWidth + 30, panelY, panelWidth, panelHeight, false);
-            this.Controls.Add(_pnlPlayer2Info);
-        }
-
-        private Panel CreatePlayerPanel(int x, int y, int width, int height, bool isPlayer1)
-        {
-            var panel = new Panel
-            {
-                Location = new Point(x, y),
-                Size = new Size(width, height),
-                BorderStyle = BorderStyle.FixedSingle,
-                BackColor = Color.White
-            };
-
-            var lblName = new Label
-            {
-                Location = new Point(10, 10),
-                AutoSize = true,
-                Font = new Font("Arial", 12, FontStyle.Bold),
-                ForeColor = Color.FromArgb(52, 73, 94)
-            };
-
-            var pbTime = new ProgressBar
-            {
-                Location = new Point(10, 35),
-                Size = new Size(width - 20, 20),
-                Maximum = 180,
-                Value = 180,
-                Style = ProgressBarStyle.Continuous
-            };
-
-            var lblHints = new Label
-            {
-                Location = new Point(10, 58),
-                AutoSize = true,
-                Font = new Font("Arial", 9, FontStyle.Regular),
-                ForeColor = Color.FromArgb(127, 140, 141),
-                Text = "Hints: 3/3"
-            };
-
-            panel.Controls.Add(lblName);
-            panel.Controls.Add(pbTime);
-            panel.Controls.Add(lblHints);
-
-            if (isPlayer1)
-            {
-                _lblPlayer1Name = lblName;
-                _pbPlayer1Time = pbTime;
-                _lblPlayer1Hints = lblHints;
-            }
-            else
-            {
-                _lblPlayer2Name = lblName;
-                _pbPlayer2Time = pbTime;
-                _lblPlayer2Hints = lblHints;
-            }
-
-            return panel;
-        }
-
-        private void CreateBoard(int cellSize, int boardPixelSize)
-        {
-            _boardPanel = new Panel
-            {
-                Location = new Point(20, 150),
-                Size = new Size(boardPixelSize, boardPixelSize),
-                BackColor = Color.White
-            };
-
+            int cellSize = _boardSize == 3 ? 100 : 35;
             _boardButtons = new Button[_boardSize, _boardSize];
+
+            pnlBoard.Controls.Clear();
 
             for (int i = 0; i < _boardSize; i++)
             {
@@ -249,14 +131,10 @@ namespace CaroGame.WinForms.Forms
                     btn.Click += BoardButton_Click;
 
                     _boardButtons[i, j] = btn;
-                    _boardPanel.Controls.Add(btn);
+                    pnlBoard.Controls.Add(btn);
                 }
             }
-
-            this.Controls.Add(_boardPanel);
         }
-
-        // Continue in Part 2...
 
         private void InitializeGame()
         {
@@ -282,11 +160,10 @@ namespace CaroGame.WinForms.Forms
             // Update UI
             UpdatePlayerNames();
             UpdateTurnIndicator();
+            UpdateHintsDisplay();
 
             // Start timer
-            _gameTimer = new System.Windows.Forms.Timer { Interval = 1000 };
-            _gameTimer.Tick += GameTimer_Tick;
-            _gameTimer.Start();
+            gameTimer.Enabled = true;
 
             // Nếu máy đi trước
             if (computerPlaysFirst)
@@ -295,10 +172,14 @@ namespace CaroGame.WinForms.Forms
             }
         }
 
+        #endregion
+
+        #region UI Update Methods
+
         private void UpdatePlayerNames()
         {
-            _lblPlayer1Name.Text = $"{_gameEngine.Player1.Name} ({_gameEngine.Player1.Symbol})";
-            _lblPlayer2Name.Text = $"{_gameEngine.Player2.Name} ({_gameEngine.Player2.Symbol})";
+            lblPlayer1Name.Text = $"{_gameEngine.Player1.Name} ({_gameEngine.Player1.Symbol})";
+            lblPlayer2Name.Text = $"{_gameEngine.Player2.Name} ({_gameEngine.Player2.Symbol})";
         }
 
         private void UpdateTurnIndicator()
@@ -306,23 +187,27 @@ namespace CaroGame.WinForms.Forms
             var currentPlayer = _gameEngine.CurrentTurn == PlayerSymbol.X
                 ? _gameEngine.Player1 : _gameEngine.Player2;
 
-            _pnlPlayer1Info.BorderStyle = currentPlayer == _gameEngine.Player1
-                ? BorderStyle.FixedSingle : BorderStyle.FixedSingle;
-            _pnlPlayer2Info.BorderStyle = currentPlayer == _gameEngine.Player2
-                ? BorderStyle.FixedSingle : BorderStyle.FixedSingle;
-
-            // Red border for current player
             if (currentPlayer == _gameEngine.Player1)
             {
-                _pnlPlayer1Info.BackColor = Color.FromArgb(255, 240, 240);
-                _pnlPlayer2Info.BackColor = Color.White;
+                pnlPlayer1Info.BackColor = Color.FromArgb(255, 240, 240);
+                pnlPlayer2Info.BackColor = Color.White;
             }
             else
             {
-                _pnlPlayer1Info.BackColor = Color.White;
-                _pnlPlayer2Info.BackColor = Color.FromArgb(255, 240, 240);
+                pnlPlayer1Info.BackColor = Color.White;
+                pnlPlayer2Info.BackColor = Color.FromArgb(255, 240, 240);
             }
         }
+
+        private void UpdateHintsDisplay()
+        {
+            lblPlayer1Hints.Text = $"Hints: {_gameEngine.Player1.HintsRemaining}/3";
+            lblPlayer2Hints.Text = $"Hints: {_gameEngine.Player2.HintsRemaining}/3";
+        }
+
+        #endregion
+
+        #region Board Events
 
         private void BoardButton_Click(object sender, EventArgs e)
         {
@@ -338,7 +223,6 @@ namespace CaroGame.WinForms.Forms
             // Thực hiện nước đi
             if (_gameEngine.MakeMove(pos.X, pos.Y))
             {
-                // Flash animation
                 FlashCell(pos.X, pos.Y);
 
                 // Nếu là PvC và game chưa kết thúc, máy sẽ đi
@@ -359,29 +243,9 @@ namespace CaroGame.WinForms.Forms
             }
         }
 
-        private void FlashCell(int row, int col, bool isHint = false)
-        {
-            _flashCount = 0;
-            _flashTimer = new System.Windows.Forms.Timer { Interval = 200 };
+        #endregion
 
-            var btn = _boardButtons[row, col];
-            var originalColor = btn.BackColor;
-            var flashColor = isHint ? Color.Yellow : Color.LightBlue;
-
-            _flashTimer.Tick += (s, e) =>
-            {
-                btn.BackColor = _flashCount % 2 == 0 ? flashColor : originalColor;
-                _flashCount++;
-
-                if (_flashCount >= (isHint ? 4 : 4)) // Flash 2 lần
-                {
-                    _flashTimer.Stop();
-                    _flashTimer.Dispose();
-                    btn.BackColor = originalColor;
-                }
-            };
-            _flashTimer.Start();
-        }
+        #region Game Engine Events
 
         private void OnMoveMade(object sender, MoveEventArgs e)
         {
@@ -398,36 +262,30 @@ namespace CaroGame.WinForms.Forms
             else
             {
                 btn.Text = move.Symbol.ToString();
-                btn.Font = new Font("Arial", _boardSize == 3 ? 36 : 20, FontStyle.Bold);
+                btn.Font = new Font("Arial", _boardSize == 3 ? 36 : 16, FontStyle.Bold);
+                btn.ForeColor = move.Symbol == PlayerSymbol.X ? Color.Blue : Color.Red;
             }
 
             btn.Enabled = false;
-
-            // Clear hint
-            if (_hintMove != null)
-            {
-                _hintMove = null;
-            }
+            _hintMove = null;
         }
 
         private void OnGameOver(object sender, GameOverEventArgs e)
         {
-            _gameTimer.Stop();
+            gameTimer.Enabled = false;
 
-            // Highlight winning cells
             if (e.WinResult != null && e.WinResult.WinningCells.Count > 0)
             {
                 _winningCells = e.WinResult.WinningCells;
                 FlashWinningCells();
             }
 
-            // Show result
             string message = e.Status == GameStatus.Draw ? "Draw!" :
                 e.WinResult.Winner == PlayerSymbol.X ?
                 $"{_gameEngine.Player1.Name} wins!" :
                 $"{_gameEngine.Player2.Name} wins!";
 
-            Task.Delay(2000).ContinueWith(t => this.Invoke(() =>
+            Task.Delay(2200).ContinueWith(t => this.Invoke(() =>
             {
                 var result = MessageBox.Show(
                     message + "\n\nPlay again?",
@@ -446,11 +304,45 @@ namespace CaroGame.WinForms.Forms
             }));
         }
 
+        private void OnTurnChanged(object sender, PlayerTurnChangedEventArgs e)
+        {
+            UpdateTurnIndicator();
+            UpdateHintsDisplay();
+        }
+
+        #endregion
+
+        #region Animation Methods
+
+        private void FlashCell(int row, int col, bool isHint = false)
+        {
+            _flashCount = 0;
+            _flashTimer = new System.Windows.Forms.Timer { Interval = 200 };
+
+            var btn = _boardButtons[row, col];
+            var originalColor = btn.BackColor;
+            var flashColor = isHint ? Color.Yellow : Color.LightBlue;
+
+            _flashTimer.Tick += (s, e) =>
+            {
+                btn.BackColor = _flashCount % 2 == 0 ? flashColor : originalColor;
+                _flashCount++;
+
+                if (_flashCount >= 4)
+                {
+                    _flashTimer.Stop();
+                    _flashTimer.Dispose();
+                    if (!isHint) btn.BackColor = originalColor;
+                }
+            };
+            _flashTimer.Start();
+        }
+
         private void FlashWinningCells()
         {
             _flashCount = 0;
             var flashTimer = new System.Windows.Forms.Timer { Interval = 200 };
-            var flashColor = Color.FromArgb(217, 119, 87); // #d97757
+            var flashColor = Color.FromArgb(217, 119, 87);
 
             flashTimer.Tick += (s, e) =>
             {
@@ -461,7 +353,7 @@ namespace CaroGame.WinForms.Forms
                 }
                 _flashCount++;
 
-                if (_flashCount >= 20) // Flash 10 lần
+                if (_flashCount >= 20)
                 {
                     flashTimer.Stop();
                     flashTimer.Dispose();
@@ -470,13 +362,11 @@ namespace CaroGame.WinForms.Forms
             flashTimer.Start();
         }
 
-        private void OnTurnChanged(object sender, PlayerTurnChangedEventArgs e)
-        {
-            UpdateTurnIndicator();
-            UpdateHintsDisplay();
-        }
+        #endregion
 
-        private void GameTimer_Tick(object sender, EventArgs e)
+        #region Timer Event
+
+        private void gameTimer_Tick(object sender, EventArgs e)
         {
             if (_gameEngine.Status != GameStatus.Playing)
                 return;
@@ -486,34 +376,23 @@ namespace CaroGame.WinForms.Forms
 
             currentPlayer.RemainingTime--;
 
-            if (currentPlayer == _gameEngine.Player1)
+            // Update progress bars
+            pbPlayer1Time.Value = Math.Max(0, _gameEngine.Player1.RemainingTime);
+            pbPlayer2Time.Value = Math.Max(0, _gameEngine.Player2.RemainingTime);
+
+            // Blinking effect when < 30s
+            if (currentPlayer.RemainingTime < 30)
             {
-                _pbPlayer1Time.Value = Math.Max(0, currentPlayer.RemainingTime);
-                if (currentPlayer.RemainingTime < 30)
-                {
-                    _pbPlayer1Time.ForeColor = Color.Red;
-                    // Blinking effect
-                    _pnlPlayer1Info.BackColor = _flashCount % 2 == 0
-                        ? Color.FromArgb(255, 200, 200)
-                        : Color.FromArgb(255, 240, 240);
-                }
-            }
-            else
-            {
-                _pbPlayer2Time.Value = Math.Max(0, currentPlayer.RemainingTime);
-                if (currentPlayer.RemainingTime < 30)
-                {
-                    _pbPlayer2Time.ForeColor = Color.Red;
-                    _pnlPlayer2Info.BackColor = _flashCount % 2 == 0
-                        ? Color.FromArgb(255, 200, 200)
-                        : Color.FromArgb(255, 240, 240);
-                }
+                var panel = currentPlayer == _gameEngine.Player1 ? pnlPlayer1Info : pnlPlayer2Info;
+                panel.BackColor = _flashCount % 2 == 0
+                    ? Color.FromArgb(255, 200, 200)
+                    : Color.FromArgb(255, 240, 240);
             }
 
             // Time out
             if (currentPlayer.RemainingTime <= 0)
             {
-                _gameTimer.Stop();
+                gameTimer.Enabled = false;
                 var winner = currentPlayer == _gameEngine.Player1
                     ? _gameEngine.Player2 : _gameEngine.Player1;
                 MessageBox.Show(
@@ -527,17 +406,12 @@ namespace CaroGame.WinForms.Forms
             _flashCount++;
         }
 
-        private void UpdateHintsDisplay()
-        {
-            _lblPlayer1Hints.Text = $"Hints: {_gameEngine.Player1.HintsRemaining}/3";
-            _lblPlayer2Hints.Text = $"Hints: {_gameEngine.Player2.HintsRemaining}/3";
-        }
+        #endregion
 
-        // Continue in Part 3 for button handlers...
+        #region Toolbar Button Events
 
-        private void BtnUndo_Click(object sender, EventArgs e)
+        private void btnUndo_Click(object sender, EventArgs e)
         {
-            // Trong PvP, cần xác nhận từ đối thủ
             if (_gameMode == GameMode.PlayerVsPlayer)
             {
                 var result = MessageBox.Show(
@@ -552,9 +426,6 @@ namespace CaroGame.WinForms.Forms
 
             if (_gameEngine.CanUndo())
             {
-                // Lưu vị trí để xóa hình ảnh
-                var moveToUndo = _gameEngine.Board.Grid;
-
                 if (_gameEngine.Undo())
                 {
                     RefreshBoard();
@@ -567,7 +438,7 @@ namespace CaroGame.WinForms.Forms
             }
         }
 
-        private void BtnRedo_Click(object sender, EventArgs e)
+        private void btnRedo_Click(object sender, EventArgs e)
         {
             if (_gameEngine.CanRedo())
             {
@@ -583,7 +454,7 @@ namespace CaroGame.WinForms.Forms
             }
         }
 
-        private void BtnNewGame_Click(object sender, EventArgs e)
+        private void btnNewGame_Click(object sender, EventArgs e)
         {
             var result = MessageBox.Show(
                 "Start a new game?",
@@ -597,66 +468,36 @@ namespace CaroGame.WinForms.Forms
             }
         }
 
-        private void BtnHint_Click(object sender, EventArgs e)
+        private void btnHint_Click(object sender, EventArgs e)
         {
             var currentPlayer = _gameEngine.CurrentTurn == PlayerSymbol.X
                 ? _gameEngine.Player1 : _gameEngine.Player2;
 
-            // Kiểm tra trong PvP, mỗi người có 3 lượt
-            if (_gameMode == GameMode.PlayerVsPlayer)
+            if (_gameMode == GameMode.PlayerVsComputer && currentPlayer.IsComputer)
             {
-                if (currentPlayer.HintsRemaining <= 0)
-                {
-                    MessageBox.Show(
-                        "No hints remaining!",
-                        "Hint",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-                    return;
-                }
+                MessageBox.Show("Computer doesn't need hints!", "Hint",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
             }
-            // Trong PvC, chỉ Player có hint
-            else if (_gameMode == GameMode.PlayerVsComputer)
-            {
-                if (currentPlayer.IsComputer)
-                {
-                    MessageBox.Show(
-                        "Computer doesn't need hints!",
-                        "Hint",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-                    return;
-                }
 
-                if (currentPlayer.HintsRemaining <= 0)
-                {
-                    MessageBox.Show(
-                        "No hints remaining!",
-                        "Hint",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-                    return;
-                }
+            if (currentPlayer.HintsRemaining <= 0)
+            {
+                MessageBox.Show("No hints remaining!", "Hint",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
             }
 
             var hint = _gameEngine.GetHint();
             if (hint != null)
             {
                 _hintMove = hint;
-                var btn = _boardButtons[hint.Row, hint.Col];
-
-                // Highlight hint cell
-                var originalColor = btn.BackColor;
-                btn.BackColor = Color.Yellow;
-
-                // Flash until player makes a move
+                _boardButtons[hint.Row, hint.Col].BackColor = Color.Yellow;
                 FlashCell(hint.Row, hint.Col, true);
-
                 UpdateHintsDisplay();
             }
         }
 
-        private void BtnSave_Click(object sender, EventArgs e)
+        private void btnSave_Click(object sender, EventArgs e)
         {
             using (var saveDialog = new SaveFileDialog())
             {
@@ -670,33 +511,27 @@ namespace CaroGame.WinForms.Forms
                     {
                         var gameState = _gameEngine.GetGameState();
                         _repository.SaveGame(gameState, saveDialog.FileName);
-                        MessageBox.Show(
-                            "Game saved successfully!",
-                            "Save Game",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
+                        MessageBox.Show("Game saved successfully!", "Save Game",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(
-                            $"Failed to save game: {ex.Message}",
-                            "Error",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error);
+                        MessageBox.Show($"Failed to save game: {ex.Message}", "Error",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
         }
 
-        private void BtnLoad_Click(object sender, EventArgs e)
+        private void btnLoad_Click(object sender, EventArgs e)
         {
-            var result = MessageBox.Show(
+            var confirmResult = MessageBox.Show(
                 "Load a saved game? Current progress will be lost.",
                 "Load Game",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Warning);
 
-            if (result != DialogResult.Yes)
+            if (confirmResult != DialogResult.Yes)
                 return;
 
             using (var openDialog = new OpenFileDialog())
@@ -716,28 +551,22 @@ namespace CaroGame.WinForms.Forms
                         UpdateTurnIndicator();
                         UpdateHintsDisplay();
 
-                        _pbPlayer1Time.Value = _gameEngine.Player1.RemainingTime;
-                        _pbPlayer2Time.Value = _gameEngine.Player2.RemainingTime;
+                        pbPlayer1Time.Value = _gameEngine.Player1.RemainingTime;
+                        pbPlayer2Time.Value = _gameEngine.Player2.RemainingTime;
 
-                        MessageBox.Show(
-                            "Game loaded successfully!",
-                            "Load Game",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
+                        MessageBox.Show("Game loaded successfully!", "Load Game",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(
-                            $"Failed to load game: {ex.Message}",
-                            "Error",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error);
+                        MessageBox.Show($"Failed to load game: {ex.Message}", "Error",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
         }
 
-        private void BtnMenu_Click(object sender, EventArgs e)
+        private void btnMenu_Click(object sender, EventArgs e)
         {
             var result = MessageBox.Show(
                 "Return to menu? Current progress will be lost.",
@@ -747,7 +576,6 @@ namespace CaroGame.WinForms.Forms
 
             if (result == DialogResult.Yes)
             {
-                // Hỏi có muốn save không (chỉ PvC)
                 if (_gameMode == GameMode.PlayerVsComputer && _gameEngine.Status == GameStatus.Playing)
                 {
                     var saveResult = MessageBox.Show(
@@ -758,7 +586,7 @@ namespace CaroGame.WinForms.Forms
 
                     if (saveResult == DialogResult.Yes)
                     {
-                        BtnSave_Click(sender, e);
+                        btnSave_Click(sender, e);
                     }
                     else if (saveResult == DialogResult.Cancel)
                     {
@@ -769,6 +597,10 @@ namespace CaroGame.WinForms.Forms
                 this.Close();
             }
         }
+
+        #endregion
+
+        #region Helper Methods
 
         private void RefreshBoard()
         {
@@ -797,7 +629,8 @@ namespace CaroGame.WinForms.Forms
                         else
                         {
                             btn.Text = symbol.ToString();
-                            btn.Font = new Font("Arial", _boardSize == 3 ? 36 : 20, FontStyle.Bold);
+                            btn.Font = new Font("Arial", _boardSize == 3 ? 36 : 16, FontStyle.Bold);
+                            btn.ForeColor = symbol == PlayerSymbol.X ? Color.Blue : Color.Red;
                         }
                         btn.Enabled = false;
                     }
@@ -807,7 +640,12 @@ namespace CaroGame.WinForms.Forms
 
         private void ResetGame()
         {
-            _gameTimer?.Stop();
+            gameTimer.Enabled = false;
+
+            // Unsubscribe events
+            _gameEngine.MoveMade -= OnMoveMade;
+            _gameEngine.GameOver -= OnGameOver;
+            _gameEngine.TurnChanged -= OnTurnChanged;
 
             // Clear board
             foreach (var btn in _boardButtons)
@@ -818,21 +656,32 @@ namespace CaroGame.WinForms.Forms
                 btn.BackColor = Color.White;
             }
 
+            // Reset progress bars
+            pbPlayer1Time.Value = 180;
+            pbPlayer2Time.Value = 180;
+            pnlPlayer1Info.BackColor = Color.White;
+            pnlPlayer2Info.BackColor = Color.White;
+
             // Restart game
             InitializeGame();
         }
 
+        #endregion
+
+        #region Form Events
+
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            _gameTimer?.Stop();
+            gameTimer.Enabled = false;
             _flashTimer?.Stop();
 
-            // Unsubscribe events
             _gameEngine.MoveMade -= OnMoveMade;
             _gameEngine.GameOver -= OnGameOver;
             _gameEngine.TurnChanged -= OnTurnChanged;
 
             base.OnFormClosing(e);
         }
+
+        #endregion
     }
 }

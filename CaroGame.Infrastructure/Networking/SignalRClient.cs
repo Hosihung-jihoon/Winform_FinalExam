@@ -20,6 +20,7 @@ namespace CaroGame.Infrastructure.Networking
         // Events
         public event EventHandler<string> RoomCreated;
         public event EventHandler<bool> RoomJoined;
+        public event EventHandler OpponentJoined;
         public event EventHandler<MoveReceivedEventArgs> OpponentMoveReceived;
         public event EventHandler<ChatMessageEventArgs> ChatMessageReceived;
         public event EventHandler OpponentDisconnected;
@@ -230,6 +231,12 @@ namespace CaroGame.Infrastructure.Networking
         /// </summary>
         private void RegisterHandlers()
         {
+            // Opponent joined (cho Host)
+            _connection.On("OpponentJoined", () =>
+            {
+                OpponentJoined?.Invoke(this, EventArgs.Empty);
+            });
+
             // Nhận nước đi từ đối thủ
             _connection.On<int, int, string>("ReceiveMove", (row, col, symbolStr) =>
             {
@@ -285,6 +292,7 @@ namespace CaroGame.Infrastructure.Networking
                 ErrorOccurred?.Invoke(this, "Connection closed");
                 return Task.CompletedTask;
             };
+
         }
     }
 

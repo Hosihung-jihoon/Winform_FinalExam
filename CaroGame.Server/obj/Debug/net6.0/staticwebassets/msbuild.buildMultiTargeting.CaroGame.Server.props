@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\CaroGame.Server.props" />
+</Project>
