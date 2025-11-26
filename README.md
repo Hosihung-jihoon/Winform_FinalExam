@@ -64,8 +64,8 @@ Game Caro (Gomoku) với 3 chế độ chơi: Player vs Computer, Player vs Play
 ### Bước 1: Clone repository
 
 ```bash
-git clone https://github.com/your-username/CaroGame.git
-cd CaroGame
+git clone https://github.com/Hosihung-jihoon/Winform_FinalExam.git
+cd Winform_FinalExam
 ```
 
 ### Bước 2: Mở Solution trong Visual Studio
