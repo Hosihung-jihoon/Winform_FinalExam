@@ -283,7 +283,7 @@
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(800, 736);
             Controls.Add(pnlBoard);
             Controls.Add(pnlPlayer2Info);
             Controls.Add(pnlPlayer1Info);

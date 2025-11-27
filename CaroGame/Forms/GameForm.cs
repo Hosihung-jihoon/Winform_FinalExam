@@ -56,32 +56,32 @@ namespace CaroGame.Winforms.Forms
 
         private void SetupForm()
         {
-            // Tính toán kích thước form dựa trên boardSize
-            int cellSize = _boardSize == 3 ? 100 : 35;
-            int boardPixelSize = _boardSize * cellSize + (_boardSize - 1) * 2;
+            //// Tính toán kích thước form dựa trên boardSize
+            //int cellSize = _boardSize == 3 ? 100 : 35;
+            //int boardPixelSize = _boardSize * cellSize + (_boardSize - 1) * 2;
 
-            // Cập nhật kích thước form
-            this.ClientSize = new Size(boardPixelSize + 60, boardPixelSize + 200);
+            //// Cập nhật kích thước form
+            //this.ClientSize = new Size(boardPixelSize + 60, boardPixelSize + 200);
 
-            // Cập nhật kích thước và vị trí các panels
-            int panelWidth = (boardPixelSize - 20) / 2;
+            //// Cập nhật kích thước và vị trí các panels
+            //int panelWidth = (boardPixelSize - 20) / 2;
 
-            pnlPlayer1Info.Size = new Size(panelWidth, 80);
-            pnlPlayer1Info.Location = new Point(20, 60);
+            //pnlPlayer1Info.Size = new Size(panelWidth, 80);
+            //pnlPlayer1Info.Location = new Point(20, 60);
 
-            pnlPlayer2Info.Size = new Size(panelWidth, 80);
-            pnlPlayer2Info.Location = new Point(panelWidth + 40, 60);
+            //pnlPlayer2Info.Size = new Size(panelWidth, 80);
+            //pnlPlayer2Info.Location = new Point(panelWidth + 40, 60);
 
-            // Cập nhật progressbar width
-            pbPlayer1Time.Size = new Size(panelWidth - 20, 20);
-            pbPlayer2Time.Size = new Size(panelWidth - 20, 20);
+            //// Cập nhật progressbar width
+            //pbPlayer1Time.Size = new Size(panelWidth - 20, 20);
+            //pbPlayer2Time.Size = new Size(panelWidth - 20, 20);
 
-            // Cập nhật board panel
-            pnlBoard.Size = new Size(boardPixelSize, boardPixelSize);
-            pnlBoard.Location = new Point(20, 150);
+            //// Cập nhật board panel
+            //pnlBoard.Size = new Size(boardPixelSize, boardPixelSize);
+            //pnlBoard.Location = new Point(20, 150);
 
-            // Cập nhật vị trí button Menu
-            btnMenu.Location = new Point(this.ClientSize.Width - 90, 7);
+            //// Cập nhật vị trí button Menu
+            //btnMenu.Location = new Point(this.ClientSize.Width - 90, 7);
 
             // Ẩn Save/Load nếu không phải PvC
             if (_gameMode != GameMode.PlayerVsComputer)
@@ -108,7 +108,7 @@ namespace CaroGame.Winforms.Forms
 
         private void CreateBoardButtons()
         {
-            int cellSize = _boardSize == 3 ? 100 : 35;
+            int cellSize = _boardSize == 3 ? 182 : 35;
             _boardButtons = new Button[_boardSize, _boardSize];
 
             pnlBoard.Controls.Clear();
@@ -120,7 +120,7 @@ namespace CaroGame.Winforms.Forms
                     var btn = new Button
                     {
                         Size = new Size(cellSize, cellSize),
-                        Location = new Point(j * (cellSize + 2), i * (cellSize + 2)),
+                        Location = new Point(j * (cellSize + 2) + 95, i * (cellSize + 2)),
                         FlatStyle = FlatStyle.Flat,
                         BackColor = Color.White,
                         Cursor = Cursors.Hand,
