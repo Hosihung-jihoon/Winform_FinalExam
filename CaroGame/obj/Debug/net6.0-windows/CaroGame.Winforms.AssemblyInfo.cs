@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CaroGame.Winforms")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6bdf0f25eacc5b84c332230af25ff2c5077a2388")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+326945361302a1bc1248c1ac65af252bedc1f6a6")]
 [assembly: System.Reflection.AssemblyProductAttribute("CaroGame.Winforms")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CaroGame.Winforms")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
