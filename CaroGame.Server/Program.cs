@@ -3,6 +3,10 @@ using CaroGame.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Đọc PORT từ environment (Railway set tự động)
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
 // Add services to the container
 builder.Services.AddSignalR(options =>
 {
@@ -33,6 +37,7 @@ app.MapHub<GameHub>("/gamehub");
 
 // Endpoint test
 app.MapGet("/", () => "Caro Game SignalR Server is running!");
+app.MapGet("/health", () => "OK");  // Health check endpoint
 
 // Background task để cleanup timeout rooms
 var cleanupTask = Task.Run(async () =>
@@ -46,9 +51,7 @@ var cleanupTask = Task.Run(async () =>
 
 Console.WriteLine("===========================================");
 Console.WriteLine("🎮 Caro Game SignalR Server Started!");
-Console.WriteLine("===========================================");
-Console.WriteLine($"Server URL: https://localhost:5001");
-Console.WriteLine($"Hub Endpoint: https://localhost:5001/gamehub");
+Console.WriteLine($"🌐 Port: {port}");
 Console.WriteLine("===========================================");
 
 app.Run();
